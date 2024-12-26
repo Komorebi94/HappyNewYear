@@ -13,7 +13,10 @@
                     {{ formatNumber(countdown.minutes) }} 分钟 {{ formatNumber(countdown.seconds) }} 秒
                 </div>
 
-                <div v-if="isTimeUp" class="new-year-message">🎉 新年快乐 🎉</div>
+                <div v-if="isTimeUp" class="new-year-message">
+                    <span v-for="(char, index) in newYearMessage" :key="index" class="char" :ref="`char${index}`">{{
+                        char }}</span>
+                </div>
             </div>
         </template>
     </div>
@@ -25,15 +28,18 @@ import { useRoute } from 'vue-router'
 import gsap from 'gsap'
 import Fireworks from 'fireworks-js'
 import { isMobile } from '@/utils/index'
+import Barrage from '@/components/Barrage/index.vue'
 
 
 const isMobile_ = isMobile();
 const { onlyShowFireWorks, testEffect } = useRoute().query
 
+const showBarrage = ref(false);
+
 // 🕒 倒计时目标时间（自定义）
 const currentYear = new Date().getFullYear()
 let targetDate = ref(`${currentYear + 1}-01-01 00:00:00`) // 动态的计算年份
-if(testEffect === 'true') {
+if (testEffect === 'true') {
     // 当前时间加 15 秒，用于测试
     targetDate = ref(new Date(new Date().getTime() + 15 * 1000))
 }
@@ -193,6 +199,10 @@ const startFinalCountdown = () => {
             isTimeUp.value = true
             isFinalCountdown.value = false
             startFireworks();
+            nextTick(() => {
+                showBarrage.value = true;
+                startNewYearAnimation()
+            })
         }
     }, 1000)
 }
@@ -218,10 +228,31 @@ const formatNumber = (number) => {
     return number.toString().padStart(2, '0')
 }
 
+// 🎉 新年快乐动画
+const newYearMessage = ref(['🎉 ','新', '年', '快', '乐',' 🎉']) // 动态数据源
+
+const startNewYearAnimation = () => {
+    const chars = newYearMessage.value.map((_, index) => {
+        return document.querySelector(`.char:nth-child(${index + 1})`)
+    })
+
+    gsap.fromTo(
+        chars,
+        { y: -200, opacity: 0 },
+        {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'bounce.out',
+            stagger: 0.5
+        }
+    )
+}
+
 
 // 🔄 初始化倒计时
 onMounted(() => {
-    if(onlyShowFireWorks === 'true' && !testEffect) {
+    if (onlyShowFireWorks === 'true' && !testEffect) {
         startFireworks()
         return;
     }
