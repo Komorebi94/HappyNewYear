@@ -1,6 +1,6 @@
 ### 新年倒计时，烟花效果
 
-![gif](https://github.com/airingursb/happy-new-year/raw/master/public/happy-new-year.gif)
+![Happy New Year GIF](https://raw.githubusercontent.com/Komorebi94/HappyNewYear/main/public/happy-new-year.gif)
 
 
 ### 参数设置
