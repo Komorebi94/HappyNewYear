@@ -1,5 +1,9 @@
-# Vue 3 + Vite
+### 新年倒计时，烟花效果
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+![gif](https://github.com/airingursb/happy-new-year/raw/master/public/happy-new-year.gif)
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+
+### 参数设置
+
+- onlyShowFireWorks = true，直接展示烟花效果
+- testEffect = true，直接进入15秒倒计时，权重大于onlyShowFireWorks

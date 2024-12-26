@@ -1,36 +1,42 @@
 <template>
     <div class="happy-new-year-wrapper">
-        <div class="countdown">
-            <!-- 全屏倒计时动画 -->
-            <div v-if="isFinalCountdown" class="fullscreen-countdown" :class="{ mobile: isMobile_ }">
-                <h1 ref="countdownNumber">{{ finalSeconds }}</h1>
-            </div>
-            <!-- 常规倒计时 -->
-            <div v-if="!isFinalCountdown && !isTimeUp" class="countdown" :class="{ mobile: isMobile_ }">
-                距离新年还有：<br v-if="isMobile_">
-                {{ formatNumber(countdown.days) }} 天 {{ formatNumber(countdown.hours) }} 小时
-                {{ formatNumber(countdown.minutes) }} 分钟 {{ formatNumber(countdown.seconds) }} 秒
-            </div>
+        <template v-if="!onlyShowFireWorks">
+            <div class="countdown">
+                <!-- 全屏倒计时动画 -->
+                <div v-if="isFinalCountdown" class="fullscreen-countdown" :class="{ mobile: isMobile_ }">
+                    <h1 ref="countdownNumber">{{ finalSeconds }}</h1>
+                </div>
+                <!-- 常规倒计时 -->
+                <div v-if="!isFinalCountdown && !isTimeUp" class="countdown" :class="{ mobile: isMobile_ }">
+                    距离新年还有：<br v-if="isMobile_">
+                    {{ formatNumber(countdown.days) }} 天 {{ formatNumber(countdown.hours) }} 小时
+                    {{ formatNumber(countdown.minutes) }} 分钟 {{ formatNumber(countdown.seconds) }} 秒
+                </div>
 
-            <div v-if="isTimeUp" class="new-year-message">🎉 新年快乐 🎉</div>
-        </div>
+                <div v-if="isTimeUp" class="new-year-message">🎉 新年快乐 🎉</div>
+            </div>
+        </template>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 import gsap from 'gsap'
 import Fireworks from 'fireworks-js'
 import { isMobile } from '@/utils/index'
 
+
 const isMobile_ = isMobile();
+const { onlyShowFireWorks, testEffect } = useRoute().query
 
 // 🕒 倒计时目标时间（自定义）
 const currentYear = new Date().getFullYear()
-// const targetDate = ref(`${currentYear + 1}-01-01 00:00:00`) // 动态的计算年份
-
-// 当前时间加 15 秒，用于测试
-const targetDate = ref(new Date(new Date().getTime() + 15 * 1000))
+let targetDate = ref(`${currentYear + 1}-01-01 00:00:00`) // 动态的计算年份
+if(testEffect === 'true') {
+    // 当前时间加 15 秒，用于测试
+    targetDate = ref(new Date(new Date().getTime() + 15 * 1000))
+}
 
 // 倒计时数据
 const countdown = ref({
@@ -215,6 +221,10 @@ const formatNumber = (number) => {
 
 // 🔄 初始化倒计时
 onMounted(() => {
+    if(onlyShowFireWorks === 'true' && !testEffect) {
+        startFireworks()
+        return;
+    }
     updateCountdown()
     setInterval(updateCountdown, 1000)
 })
