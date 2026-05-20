@@ -2,9 +2,17 @@
   "name": "新年快乐 · 跨年倒计时",
   "short_name": "跨年倒计时",
   "description": "跨年倒计时、烟花与弹幕祝福",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "lang": "zh-CN"
+  "lang": "zh-CN",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }

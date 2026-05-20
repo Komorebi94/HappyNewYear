@@ -9,9 +9,9 @@ const routes = [
     }
 ]
 
-// 创建路由实例
+// 创建路由实例（GitHub Pages 子路径需与 vite.config base 一致）
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE),
     routes
 })
 
