@@ -82,6 +82,12 @@ npm run preview
 
 若使用自定义域名并部署在站点根路径，构建时设 `VITE_BASE=/`，并在 `public/` 下添加 `CNAME` 文件；Pages 设置里填写自定义域名。详见 [GitHub Pages 文档](https://docs.github.com/zh/pages)。
 
+### 部署后黑屏？
+
+1. 确认访问地址带仓库名：`https://<用户名>.github.io/HappyNewYear/`（不是站点根 `/`）。
+2. 必须使用 **Deploy to GitHub Pages** 工作流（带 `VITE_BASE=/HappyNewYear/`），不要只跑 CI。
+3. 强刷缓存（Ctrl+Shift+R）或无痕窗口；Network 里应能看到主 JS 请求成功且页面有倒计时 DOM。
+
 ### Fork 后部署
 
 1. Fork 本仓库到你账号下。

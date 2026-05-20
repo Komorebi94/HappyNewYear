@@ -2,9 +2,15 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
+const appBase = process.env.VITE_BASE || '/'
+
 // https://vite.dev/config/
 export default defineConfig({
-    base: process.env.VITE_BASE || '/',
+    base: appBase,
+    define: {
+        // 确保客户端能拿到与 base 一致的值（部分环境下 import.meta.env.BASE 可能未注入）
+        __APP_BASE__: JSON.stringify(appBase)
+    },
     plugins: [vue()],
     server: {
         host: '0.0.0.0'
