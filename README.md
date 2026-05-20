@@ -1,8 +1,11 @@
-# 新年倒计时 · 烟花效果
+# 新年倒计时 · 生日祝福
 
-Vue 3 + Vite 实现的跨年倒计时页面，支持烟花、弹幕、姓名分享与 GSAP 动画。
+Vue 3 + Vite 实现的跨年倒计时与生日祝福页面，支持烟花、弹幕、姓名分享与 GSAP 动画。
 
-**在线预览：** https://komorebi94.github.io/HappyNewYear/
+| 页面 | 地址 |
+|------|------|
+| 跨年倒计时 | https://komorebi94.github.io/HappyNewYear/ |
+| 生日祝福 | https://komorebi94.github.io/HappyNewYear/birthday |
 
 ![Happy New Year GIF](https://raw.githubusercontent.com/Komorebi94/HappyNewYear/main/public/happy-new-year.gif)
 
@@ -13,7 +16,10 @@ npm install
 npm run dev
 ```
 
-本地访问：http://localhost:5173
+本地访问：
+
+- 跨年：http://localhost:5173/
+- 生日：http://localhost:5173/birthday
 
 生产构建与本地预览：
 
@@ -31,7 +37,7 @@ npm test
 
 ## 部署到 GitHub Pages
 
-本仓库已配置 [GitHub Actions](.github/workflows/deploy.yml)，推送到 `main` 或 `master` 分支后会自动构建并发布。
+本仓库已配置 [GitHub Actions](.github/workflows/deploy.yml)，推送到 **`main`** 分支后会自动构建并发布（远程已统一使用 `main`，不再使用 `master`）。
 
 ### 首次启用（只需做一次）
 
@@ -46,8 +52,7 @@ npm test
 ```bash
 git add .
 git commit -m "your message"
-git push origin master
-# 若使用 main 分支：git push origin main
+git push origin main
 ```
 
 推送后可在 **Actions** 页查看 **Deploy to GitHub Pages** 工作流（含 `build` + `deploy` 两个 job）；约 1–2 分钟后站点更新。
@@ -95,27 +100,41 @@ npm run preview
 3. 在 Fork 仓库中同样启用 **Pages → GitHub Actions**。
 4. 你的地址为：`https://<你的用户名>.github.io/<仓库名>/`
 
-## URL 参数
+## 页面说明
+
+### 跨年倒计时 `/`
 
 | 参数 | 说明 |
 |------|------|
 | `onlyShowFireWorks=true` | 仅展示烟花，不显示倒计时 |
-| `testEffect=true` | 15 秒测试倒计时（优先级高于 `onlyShowFireWorks`） |
-| `target` | 自定义目标时间（ISO 8601，如 `2026-01-01T00:00:00`） |
-| `messages` | 自定义弹幕，逗号分隔（如 `新年快乐,万事如意`） |
-| `name` | 分享对象姓名，会显示在跨年祝福语与弹幕中 |
-
-示例（线上请把域名换成你的 Pages 地址）：
+| `testEffect=true` | 15 秒测试倒计时 |
+| `target` | 自定义目标时间（ISO 8601） |
+| `messages` | 自定义弹幕，逗号分隔 |
+| `name` | 姓名，显示在祝福语与弹幕中 |
 
 | 场景 | 链接 |
 |------|------|
 | 首页 | `https://komorebi94.github.io/HappyNewYear/` |
 | 测试倒计时 | `https://komorebi94.github.io/HappyNewYear/?testEffect=true` |
-| 仅烟花 | `https://komorebi94.github.io/HappyNewYear/?onlyShowFireWorks=true` |
 | 带姓名 | `https://komorebi94.github.io/HappyNewYear/?name=小明&testEffect=true` |
-| 自定义弹幕 | `https://komorebi94.github.io/HappyNewYear/?messages=新年快乐,Hello%202026` |
 
-页面右上角悬停 **分享链接** 可展开姓名输入框，复制的链接会带上 `name` 等当前参数。
+### 生日祝福 `/birthday`
+
+霓虹渐变标题、飘气球、点燃蜡烛、粉金烟花、彩纸与弹幕。
+
+| 参数 | 说明 |
+|------|------|
+| `name` | 寿星姓名（标题与弹幕个性化） |
+| `messages` | 自定义弹幕，逗号分隔 |
+| `auto=false` | 关闭进入页面 1.2 秒后自动庆祝 |
+
+| 场景 | 链接 |
+|------|------|
+| 生日页 | `https://komorebi94.github.io/HappyNewYear/birthday` |
+| 带姓名 | `https://komorebi94.github.io/HappyNewYear/birthday?name=小红` |
+| 立即庆祝 | 打开后点「点燃蜡烛」，或默认自动庆祝 |
+
+左上角可切换 **跨年倒计时 / 生日祝福**。右上角悬停 **分享链接** 可复制带 `name` 的当前页链接。
 
 环境变量见 [.env.example](.env.example)（`VITE_DEFAULT_TARGET`、`VITE_BASE`）。
 
@@ -130,7 +149,9 @@ src/
 ├── constants/
 ├── styles/
 ├── utils/
-└── views/HappyNewYear/
+└── views/
+    ├── HappyNewYear/
+    └── Birthday/
 ```
 
 ## 多端适配

@@ -2,7 +2,7 @@ import { ref, computed, watch } from 'vue'
 import { Fireworks } from 'fireworks-js'
 import { createFireworksOptions, isTouchDevice } from '@/utils/index'
 
-export function useFireworks (wrapperRef, { deviceType, reducedMotion }) {
+export function useFireworks (wrapperRef, { deviceType, reducedMotion, theme = 'default' }) {
     const showFireworksHint = ref(false)
     let fireworksInstance = null
     let hintTimer = null
@@ -53,7 +53,8 @@ export function useFireworks (wrapperRef, { deviceType, reducedMotion }) {
 
         const options = createFireworksOptions(deviceType.value, {
             interactive: fireworksInteractive.value,
-            reducedMotion: reducedMotion.value
+            reducedMotion: reducedMotion.value,
+            theme
         })
 
         fireworksInstance = new Fireworks(wrapperRef.value, options)

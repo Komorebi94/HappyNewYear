@@ -31,16 +31,23 @@ const FIREWORKS_TIER = {
     desktop: { particles: 55, intensity: 32, flickering: 50 }
 }
 
-export const createFireworksOptions = (deviceType, { interactive = false, reducedMotion = false } = {}) => {
+export const createFireworksOptions = (
+    deviceType,
+    { interactive = false, reducedMotion = false, theme = 'default' } = {}
+) => {
     const tier = FIREWORKS_TIER[deviceType] || FIREWORKS_TIER.desktop
     const motionScale = reducedMotion ? 0.6 : 1
+    const hue =
+        theme === 'birthday'
+            ? { min: 280, max: 55 }
+            : { min: 0, max: 360 }
 
     return {
         autoresize: true,
-        opacity: 0.5,
+        opacity: 0.55,
         acceleration: 1.05,
         friction: 0.97,
-        gravity: 1.5,
+        gravity: 1.4,
         particles: Math.round(tier.particles * motionScale),
         traceLength: reducedMotion ? 2 : 3,
         traceSpeed: 10,
@@ -48,7 +55,7 @@ export const createFireworksOptions = (deviceType, { interactive = false, reduce
         intensity: Math.round(tier.intensity * motionScale),
         flickering: tier.flickering,
         lineStyle: 'round',
-        hue: { min: 0, max: 360 },
+        hue,
         delay: { min: 30, max: 60 },
         rocketsPoint: { min: 50, max: 50 },
         lineWidth: {

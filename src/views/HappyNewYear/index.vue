@@ -15,6 +15,7 @@
             <p v-if="showFireworksHint" class="fireworks-hint">{{ hintText }}</p>
         </Transition>
 
+        <PageNav />
         <ShareButton :params="shareParams" :initial-name="shareName" />
 
         <CountdownDisplay
@@ -52,6 +53,7 @@ import { useCelebration } from '@/composables/useCelebration'
 import StarsBackground from '@/components/StarsBackground/index.vue'
 import CountdownDisplay from '@/components/CountdownDisplay/index.vue'
 import Barrage from '@/components/Barrage/index.vue'
+import PageNav from '@/components/PageNav/index.vue'
 import ShareButton from '@/components/ShareButton/index.vue'
 
 const route = useRoute()
