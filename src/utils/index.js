@@ -67,7 +67,7 @@ export const createFireworksOptions = (
         mouse: {
             click: interactive,
             move: interactive && deviceType === 'desktop',
-            max: interactive ? 3 : 1
+            max: interactive ? 5 : 1
         }
     }
 }

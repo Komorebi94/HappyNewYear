@@ -1,7 +1,7 @@
 <template>
     <div
         ref="wrapperRef"
-        class="happy-new-year-wrapper"
+        class="happy-new-year-wrapper fireworks-host"
         :class="[deviceType, { 'is-reduced-motion': reducedMotion, 'is-celebrating': isTimeUp }]"
         @click="onWrapperTap"
     >
@@ -15,7 +15,6 @@
             <p v-if="showFireworksHint" class="fireworks-hint">{{ hintText }}</p>
         </Transition>
 
-        <PageNav />
         <ShareButton :params="shareParams" :initial-name="shareName" />
 
         <CountdownDisplay
@@ -53,7 +52,6 @@ import { useCelebration } from '@/composables/useCelebration'
 import StarsBackground from '@/components/StarsBackground/index.vue'
 import CountdownDisplay from '@/components/CountdownDisplay/index.vue'
 import Barrage from '@/components/Barrage/index.vue'
-import PageNav from '@/components/PageNav/index.vue'
 import ShareButton from '@/components/ShareButton/index.vue'
 
 const route = useRoute()
@@ -144,6 +142,8 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/fireworks-layer.scss';
+
 .happy-new-year-wrapper {
     display: flex;
     justify-content: center;
@@ -214,6 +214,10 @@ onUnmounted(() => {
 
 .is-celebrating {
     overflow: visible;
+}
+
+:deep(.countdown-panel) {
+    pointer-events: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {

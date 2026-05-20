@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { buildShareUrl, sanitizeShareName } from '@/utils/index'
 
 const props = defineProps({
@@ -78,6 +78,10 @@ const copyLink = async () => {
         resetTimer = null
     }, 2000)
 }
+
+onUnmounted(() => {
+    if (resetTimer) clearTimeout(resetTimer)
+})
 </script>
 
 <style lang="scss" scoped>

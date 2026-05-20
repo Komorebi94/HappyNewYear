@@ -105,10 +105,43 @@ export function useCountdown (targetDate, { reducedMotion, onCelebrate, onFinalH
 
     const { pause, resume } = useIntervalFn(updateCountdown, 1000, { immediate: false })
 
+    const syncFinalSecondsFromClock = () => {
+        const target = new Date(targetDate.value)
+        const diff = target - new Date()
+        if (diff <= 0) {
+            triggerCelebrate()
+            return
+        }
+
+        const seconds = Math.floor((diff / 1000) % 60)
+        const minutes = Math.floor((diff / (1000 * 60)) % 60)
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+
+        if (days === 0 && hours === 0 && minutes === 0 && seconds <= 10) {
+            finalSeconds.value = seconds
+            if (!isFinalCountdown.value) {
+                isFinalCountdown.value = true
+                pause()
+                resumeFinal()
+            }
+            return
+        }
+
+        isFinalCountdown.value = false
+        pauseFinal()
+        updateCountdown()
+        if (!celebrationTriggered) resume()
+    }
+
     const visibility = useDocumentVisibility()
     watch(visibility, (state) => {
         if (state === 'visible' && !celebrationTriggered) {
-            updateCountdown()
+            if (isFinalCountdown.value) {
+                syncFinalSecondsFromClock()
+            } else {
+                updateCountdown()
+            }
         }
     })
 

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { sanitizeShareName } from '@/utils/index'
-import { DEFAULT_BIRTHDAY_MESSAGES, buildBirthdayBarrage } from '@/utils/birthday'
+import { DEFAULT_BIRTHDAY_MESSAGES, buildBirthdayBarrage, parseBirthdayAge } from '@/utils/birthday'
 
 export function useBirthdayQuery () {
     const route = useRoute()
@@ -21,11 +21,17 @@ export function useBirthdayQuery () {
         return buildBirthdayBarrage(shareName.value, base)
     })
 
+    const age = computed(() => parseBirthdayAge(route.query.age))
+
     const autoCelebrate = computed(() => route.query.auto !== 'false')
+
+    const musicEnabled = computed(() => route.query.music !== 'false')
 
     return {
         shareName,
         barrageMessages,
-        autoCelebrate
+        age,
+        autoCelebrate,
+        musicEnabled
     }
 }

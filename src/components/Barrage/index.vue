@@ -1,6 +1,6 @@
 <template>
-    <div class="barrage-wrapper" :aria-hidden="!reducedMotion">
-        <!-- 减弱动效：底部静态轮播 -->
+    <div class="barrage-wrapper">
+        <!-- 减弱动效：底部静态轮播（需对读屏可见） -->
         <p
             v-if="reducedMotion && staticText"
             class="barrage-static"
@@ -14,6 +14,7 @@
                 class="barrage-item"
                 :class="`barrage-item--${density}`"
                 :style="item.style"
+                aria-hidden="true"
             >{{ item.text }}</span>
         </template>
     </div>
@@ -51,17 +52,18 @@ const props = defineProps({
 })
 
 const DENSITY_CONFIG = {
-    low: { interval: 1500, maxItems: 20, burst: 1, stagger: 0 },
-    medium: { interval: 1000, maxItems: 32, burst: 1, stagger: 0 },
-    high: { interval: 750, maxItems: 45, burst: 2, stagger: 500 }
+    low: { interval: 1800, maxItems: 12, burst: 1, stagger: 0 },
+    medium: { interval: 1200, maxItems: 18, burst: 1, stagger: 0 },
+    high: { interval: 900, maxItems: 24, burst: 1, stagger: 0 }
 }
 
 /** 固定轨道（%），上下分区避让中部祝福语 */
-const UPPER_LANES = [8, 13, 18, 23, 28]
-const LOWER_LANES = [72, 77, 82, 87, 92]
-const FULL_LANES = [10, 18, 26, 34, 42, 50, 58, 66, 74, 82]
+const UPPER_LANES = [6, 11, 16, 21, 26]
+const LOWER_LANES = [74, 79, 84, 89, 94]
+const FULL_LANES = [8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88]
 
-const MIN_LANE_GAP = 6
+/** 轨道释放时间（ms），同一轨道同时仅一条弹幕 */
+const laneReleaseAt = new Map()
 let laneCursor = 0
 
 const reducedMotion = ref(prefersReducedMotion())
@@ -96,31 +98,34 @@ const getLanePool = () => {
     return [...UPPER_LANES, ...LOWER_LANES]
 }
 
-/** 按轨道轮询 + 最小间距，减少同高度扎堆 */
-const pickDispersedTop = () => {
+/** 估算文案宽度（vw），用于计算同轨道下一条的安全间隔 */
+const estimateWidthVw = (text) => Math.min(48, 3 + text.length * 1.6)
+
+/**
+ * 同轨道前后两条的最小间隔（秒）
+ * 依据动画时长与估算宽度，避免水平方向追尾重叠
+ */
+const laneCooldownSec = (text, durationSec) => {
+    const widthVw = estimateWidthVw(text)
+    const travelVw = 100 + widthVw
+    return durationSec * ((widthVw + 10) / travelVw) + 1.2
+}
+
+const isLaneFree = (lane, now = Date.now()) => {
+    const until = laneReleaseAt.get(lane)
+    return until == null || until <= now
+}
+
+/** 轮询选取当前空闲轨道；全部占用则跳过本次生成 */
+const pickFreeLane = () => {
     const pool = getLanePool()
-    const activeTops = items.value.map((item) => parseFloat(item.style.top))
+    const now = Date.now()
+    const free = pool.filter((lane) => isLaneFree(lane, now))
+    if (!free.length) return null
 
-    for (let i = 0; i < pool.length; i++) {
-        const lane = pool[(laneCursor + i) % pool.length]
-        const crowded = activeTops.some((t) => Math.abs(t - lane) < MIN_LANE_GAP)
-        if (!crowded) {
-            laneCursor = (laneCursor + i + 1) % pool.length
-            return lane + (Math.random() - 0.5) * 2
-        }
-    }
-
-    let bestLane = pool[0]
-    let fewestNeighbors = Infinity
-    for (const lane of pool) {
-        const neighbors = activeTops.filter((t) => Math.abs(t - lane) < MIN_LANE_GAP * 2).length
-        if (neighbors < fewestNeighbors) {
-            fewestNeighbors = neighbors
-            bestLane = lane
-        }
-    }
-    laneCursor = (pool.indexOf(bestLane) + 1) % pool.length
-    return bestLane + (Math.random() - 0.5) * 3
+    const lane = free[laneCursor % free.length]
+    laneCursor = (laneCursor + 1) % free.length
+    return lane
 }
 
 const pickMessage = () => {
@@ -137,24 +142,28 @@ const pickMessage = () => {
 const spawnOne = () => {
     if (items.value.length >= config.value.maxItems) return
 
+    const lane = pickFreeLane()
+    if (lane == null) return
+
     const text = pickMessage()
     const id = `${Date.now()}-${Math.random()}`
-    const top = pickDispersedTop()
-    const duration = 10 + Math.random() * 8
-    const delay = -(Math.random() * 6)
+    const duration = 11 + Math.random() * 5
+    const cooldownSec = laneCooldownSec(text, duration)
+
+    laneReleaseAt.set(lane, Date.now() + cooldownSec * 1000)
 
     items.value.push({
         id,
         text,
+        lane,
         style: {
-            top: `${top}%`,
+            top: `${lane}%`,
             animationDuration: `${duration}s`,
-            animationDelay: `${delay}s`
+            animationDelay: '0s'
         }
     })
 
-    const visibleMs = (duration + Math.max(0, -delay)) * 1000 + 200
-    setTimeout(() => removeItem(id), visibleMs)
+    setTimeout(() => removeItem(id), duration * 1000 + 300)
 }
 
 const spawn = () => {
@@ -167,6 +176,7 @@ const spawn = () => {
 const startScrolling = () => {
     clearSpawnTimer()
     items.value = []
+    laneReleaseAt.clear()
     laneCursor = 0
     spawn()
     spawnTimer = setInterval(spawn, config.value.interval)
@@ -249,6 +259,7 @@ onUnmounted(() => {
 .barrage-item {
     position: absolute;
     left: 0;
+    line-height: 1.35;
     white-space: nowrap;
     color: #fff;
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
@@ -256,6 +267,7 @@ onUnmounted(() => {
     animation-timing-function: linear;
     animation-fill-mode: forwards;
     will-change: transform;
+    transform: translateX(100vw);
 
     &--low {
         font-size: 0.875rem;

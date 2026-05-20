@@ -69,10 +69,10 @@ export function useCelebration ({ reducedMotion, shareName }) {
         callbacks.onFireworks?.()
         callbacks.onHint?.()
 
+        showBarrage.value = true
+        // 等待庆祝区块 Transition 挂载后再取 ref，避免 messageEl 被提前清空
         nextTick(() => {
-            messageEl.value = null
-            showBarrage.value = true
-            startNewYearAnimation()
+            nextTick(() => startNewYearAnimation())
         })
     }
 

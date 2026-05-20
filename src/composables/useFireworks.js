@@ -71,9 +71,27 @@ export function useFireworks (wrapperRef, { deviceType, reducedMotion, theme = '
         if (fireworksInstance) refreshFireworks()
     })
 
-    const onWrapperTap = () => {
-        if (!fireworksInteractive.value || !fireworksInstance) return
+    const onWrapperTap = (event) => {
+        if (!fireworksInteractive.value) return
+
+        if (!fireworksInstance) {
+            startFireworks()
+            return
+        }
+
         dismissHint()
+
+        // 将点击坐标转发给 canvas（避免被上层 UI 挡住时无法触发）
+        const canvas = wrapperRef.value?.querySelector('canvas')
+        if (!canvas || !event) return
+
+        canvas.dispatchEvent(
+            new MouseEvent('click', {
+                clientX: event.clientX,
+                clientY: event.clientY,
+                bubbles: true
+            })
+        )
     }
 
     const destroy = () => {

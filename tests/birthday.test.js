@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { buildBirthdayTitle, buildBirthdayBarrage } from '../src/utils/birthday.js'
+import {
+    buildBirthdayTitle,
+    buildBirthdayBarrage,
+    buildBirthdaySubtitle,
+    parseBirthdayAge
+} from '../src/utils/birthday.js'
 
 describe('buildBirthdayTitle', () => {
     it('returns default title without name', () => {
@@ -9,6 +14,25 @@ describe('buildBirthdayTitle', () => {
     it('includes name', () => {
         const title = buildBirthdayTitle('小明')
         expect(title.join('')).toBe('小明，生日快乐')
+    })
+})
+
+describe('buildBirthdaySubtitle', () => {
+    it('includes name and age', () => {
+        const text = buildBirthdaySubtitle('小明', 18)
+        expect(text).toContain('小明')
+        expect(text).toContain('18')
+    })
+})
+
+describe('parseBirthdayAge', () => {
+    it('parses valid age', () => {
+        expect(parseBirthdayAge('25')).toBe(25)
+    })
+
+    it('rejects invalid age', () => {
+        expect(parseBirthdayAge('abc')).toBeNull()
+        expect(parseBirthdayAge('200')).toBeNull()
     })
 })
 
