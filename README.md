@@ -31,7 +31,7 @@ npm test
 
 ## 部署到 GitHub Pages
 
-本仓库已配置 [GitHub Actions](.github/workflows/deploy.yml)，推送到 `main` 分支后会自动构建并发布。
+本仓库已配置 [GitHub Actions](.github/workflows/deploy.yml)，推送到 `main` 或 `master` 分支后会自动构建并发布。
 
 ### 首次启用（只需做一次）
 
@@ -46,10 +46,11 @@ npm test
 ```bash
 git add .
 git commit -m "your message"
-git push origin main
+git push origin master
+# 若使用 main 分支：git push origin main
 ```
 
-推送后可在 **Actions** 页查看部署进度；约 1–2 分钟后站点更新。
+推送后可在 **Actions** 页查看 **Deploy to GitHub Pages** 工作流（含 `build` + `deploy` 两个 job）；约 1–2 分钟后站点更新。
 
 ### 子路径说明（重要）
 
@@ -59,7 +60,7 @@ GitHub 项目页地址为 `https://<user>.github.io/<仓库名>/`，构建时必
 VITE_BASE=/HappyNewYear/
 ```
 
-- CI 工作流里已写死上述变量，**推 `main` 即可**，无需本地再配。
+- CI / Deploy 工作流里已写死上述变量，**推送即可**，无需本地再配。
 - 若仓库名不是 `HappyNewYear`，请同时修改：
   - `.github/workflows/deploy.yml` 中的 `VITE_BASE`
   - `.env.example` 中的 `VITE_BASE` 示例
