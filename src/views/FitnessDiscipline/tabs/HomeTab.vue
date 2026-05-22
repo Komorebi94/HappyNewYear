@@ -3,7 +3,6 @@
         <header class="balance-hero">
             <p class="hero-label">
                 <template v-if="isSimMode">预览 · 第 {{ simDay }} 课次</template>
-                <template v-else>笑笑的存钱罐</template>
             </p>
 
             <p class="hero-balance" :class="{ 'is-sim-today': isSimMode && !todayRecord }">
