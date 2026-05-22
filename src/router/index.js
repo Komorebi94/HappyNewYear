@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { resolveAppBase } from '@/utils/resolveAppBase'
 import HappyNewYear from '@/views/HappyNewYear/index.vue'
 import Birthday from '@/views/Birthday/index.vue'
+import FitnessDiscipline from '@/views/FitnessDiscipline/index.vue'
 
 const routes = [
     {
@@ -13,6 +14,11 @@ const routes = [
         path: '/birthday',
         name: 'Birthday',
         component: Birthday
+    },
+    {
+        path: '/fitness',
+        name: 'FitnessDiscipline',
+        component: FitnessDiscipline
     },
     {
         path: '/:pathMatch(.*)*',
