@@ -7,12 +7,7 @@ import {
     BREAKTHROUGH_LEVELS,
     SURPRISE_REWARD_TIERS
 } from '@/constants/fitness'
-import {
-    findSurpriseTier,
-    getDaysToSurpriseTier,
-    getNextSurpriseTier,
-    getPendingSurpriseTiers
-} from '@/utils/fitnessSurprise'
+import { findSurpriseTier } from '@/utils/fitnessSurprise'
 import {
     formatDateKey,
     loadFitnessState,
@@ -66,7 +61,6 @@ export function useFitnessDiscipline () {
         state.value = loaded
         syncPushVariantToSession()
         persist()
-        openSurpriseModalIfNeeded()
     }
 
     const todayRecord = computed(() =>
@@ -137,39 +131,13 @@ export function useFitnessDiscipline () {
         return mod === 0 ? 7 : 7 - mod
     })
 
-    const pendingSurpriseTiers = computed(() =>
-        getPendingSurpriseTiers(state.value.continueDays, state.value)
-    )
-
-    const nextSurpriseTier = computed(() =>
-        getNextSurpriseTier(state.value.continueDays)
-    )
-
-    const surpriseDaysRemaining = computed(() => {
-        const next = nextSurpriseTier.value
-        if (!next) return 0
-        return getDaysToSurpriseTier(state.value.continueDays, next)
-    })
-
-    const canClaimSurprise = computed(() =>
-        !isSimMode.value && pendingSurpriseTiers.value.length > 0
-    )
-
     const activeSurpriseTier = computed(() =>
         findSurpriseTier(activeSurpriseTierId.value)
     )
 
-    const openSurpriseModalIfNeeded = (preferredTierId = null) => {
-        if (isSimMode.value) return
-
-        const pending = pendingSurpriseTiers.value
-        if (!pending.length) return
-
-        const preferred = preferredTierId
-            ? pending.find((t) => t.id === preferredTierId)
-            : null
-
-        activeSurpriseTierId.value = (preferred ?? pending[0]).id
+    const showSurpriseForTier = (tier) => {
+        if (isSimMode.value || !tier || state.value[tier.id]) return
+        activeSurpriseTierId.value = tier.id
         showSurpriseModal.value = true
     }
 
@@ -267,9 +235,11 @@ export function useFitnessDiscipline () {
         showToast(`打卡成功！今日 +${moneyChange} 元`)
 
         const justReached = SURPRISE_REWARD_TIERS.find(
-            (tier) => newContinue === tier.days
+            (tier) => newContinue === tier.days && !state.value[tier.id]
         )
-        openSurpriseModalIfNeeded(justReached?.id)
+        if (justReached) {
+            showSurpriseForTier(justReached)
+        }
         return { ok: true, moneyChange }
     }
 
@@ -448,47 +418,13 @@ export function useFitnessDiscipline () {
         persist()
         showSurpriseModal.value = false
         activeSurpriseTierId.value = null
-        showToast(`「${tier.label}」已登记，请把截图发给笑笑领取礼物～`)
-
-        if (pendingSurpriseTiers.value.length > 0) {
-            openSurpriseModalIfNeeded()
-        }
+        showToast(`「${tier.label}」已登记，请保存截图并按约定领取礼物～`)
         return { ok: true }
     }
 
     const dismissSurpriseModal = () => {
         showSurpriseModal.value = false
         activeSurpriseTierId.value = null
-    }
-
-    const openSurpriseModal = (tierId = null) => {
-        if (isSimMode.value) return
-
-        if (tierId) {
-            const tier = findSurpriseTier(tierId)
-            if (!tier) return
-            if (state.value[tier.id]) {
-                showToast('该档惊喜奖已兑现')
-                return
-            }
-            if (state.value.continueDays < tier.days) {
-                showToast(`再连续 ${getDaysToSurpriseTier(state.value.continueDays, tier)} 天可解锁`)
-                return
-            }
-            openSurpriseModalIfNeeded(tierId)
-            return
-        }
-
-        if (!pendingSurpriseTiers.value.length) {
-            const next = nextSurpriseTier.value
-            if (!next) {
-                showToast('三档惊喜奖均已兑现，太厉害了！')
-            } else {
-                showToast(`再连续 ${surpriseDaysRemaining.value} 天可解锁「${next.label}」`)
-            }
-            return
-        }
-        openSurpriseModalIfNeeded()
     }
 
     const resetAllData = () => {
@@ -508,10 +444,6 @@ export function useFitnessDiscipline () {
         toast,
         showSurpriseModal,
         activeSurpriseTier,
-        pendingSurpriseTiers,
-        nextSurpriseTier,
-        surpriseDaysRemaining,
-        canClaimSurprise,
         todayRecord,
         todayStatus,
         canComplete,
@@ -535,7 +467,6 @@ export function useFitnessDiscipline () {
         redeemReward,
         redeemSurpriseReward,
         dismissSurpriseModal,
-        openSurpriseModal,
         claimBreakthrough,
         setPushVariant,
         resetAllData,

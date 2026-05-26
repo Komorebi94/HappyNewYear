@@ -90,19 +90,19 @@ export const SURPRISE_REWARD_TIERS = [
         id: 'surprise_60',
         days: 60,
         label: '两月坚持奖',
-        prizeHint: '入门惊喜礼物（由笑笑兑现）'
+        prizeHint: '入门惊喜礼物（线下兑现）'
     },
     {
         id: 'surprise_180',
         days: 180,
         label: '半年里程碑',
-        prizeHint: '进阶惊喜礼物（由笑笑兑现）'
+        prizeHint: '进阶惊喜礼物（线下兑现）'
     },
     {
         id: 'surprise_365',
         days: 365,
         label: '全年自律奖',
-        prizeHint: '终极惊喜大礼（由笑笑兑现）'
+        prizeHint: '终极惊喜大礼（线下兑现）'
     }
 ]
 
@@ -112,11 +112,11 @@ export function getSurpriseRewardCopy (tier) {
         subtitle: `${tier.label} · 连续打卡满 ${tier.days} 天`,
         prizeHint: tier.prizeHint,
         redeemSteps: [
-            `对本弹窗或首页惊喜奖区域截图（需能看到「${tier.days} 天」档位）`,
-            `把截图发给笑笑，说明兑现「${tier.label}」`,
-            '确认后线下领取对应礼物'
+            '对本弹窗截图并保存',
+            `凭截图按事先约定兑现「${tier.label}」`,
+            '领取对应的线下惊喜礼物'
         ],
-        screenshotTip: `本档为连续满 ${tier.days} 天的专属奖励，建议同时截到连续天数`
+        screenshotTip: '建议截图包含本弹窗与连续打卡天数'
     }
 }
 

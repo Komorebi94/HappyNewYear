@@ -40,13 +40,6 @@
                 <li><strong>缺席</strong>：{{ REWARDS.DAILY_SKIP }} 元</li>
                 <li><strong>兑换奖励</strong>：在「台账」页操作，自定义金额并记入兑换记录</li>
             </ul>
-            <h4 class="sub-head">惊喜奖（凭截图兑现，不走存钱罐）</h4>
-            <ul class="rule-list compact">
-                <li v-for="tier in SURPRISE_REWARD_TIERS" :key="tier.id">
-                    连续满 <strong>{{ tier.days }} 天</strong> · {{ tier.label }}：
-                    {{ tier.prizeHint }}
-                </li>
-            </ul>
             <h4 class="sub-head">突破奖励（终身一次）</h4>
             <ul class="rule-list compact">
                 <li v-for="level in BREAKTHROUGH_LEVELS" :key="level.id">
@@ -99,8 +92,7 @@ import {
     APP_NAME,
     APP_VERSION,
     BREAKTHROUGH_LEVELS,
-    REWARDS,
-    SURPRISE_REWARD_TIERS
+    REWARDS
 } from '@/constants/fitness'
 import { FITNESS_DISCIPLINE_KEY } from '../keys'
 import ConfirmModal from '../components/ConfirmModal.vue'
