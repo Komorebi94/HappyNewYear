@@ -47,7 +47,7 @@ describe('rewards follow progression', () => {
     })
 
     it('uses deload reward on deload session', () => {
-        expect(calcDailyCompleteReward(24).amount).toBe(12)
+        expect(calcDailyCompleteReward(24).amount).toBe(10)
     })
 })
 

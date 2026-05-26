@@ -19,20 +19,20 @@ export const PROGRESSION_CYCLE = {
 }
 
 /**
- * 连续完成 60 课次预估总收益约 1500 元（虚拟金），结构大致为：
+ * 连续完成 60 课次预估总收益约 1300 元（虚拟金），结构大致为：
  * 每日基础 ~62% · 连续7天 ~12% · 小周期/升阶 ~14% · 动作进阶 ~8% · 放松周 ~4%
  */
 export const REWARDS = {
-    DAILY_BASE: 13,
+    DAILY_BASE: 10,
     DAILY_PER_MESO: 1,
-    DAILY_CAP: 22,
+    DAILY_CAP: 20,
     DAILY_SKIP: -5,
     EXTRA_COMPLETE: 5,
     STREAK_7: 25,
     STEP_DAY_BONUS: 5,
-    DELOAD_COMPLETE: 12,
-    VARIANT_UPGRADE: 32,
-    MESO_COMPLETE: 12,
+    DELOAD_COMPLETE: 10,
+    VARIANT_UPGRADE: 25,
+    MESO_COMPLETE: 10,
     BREAK_5: 35,
     BREAK_10: 60,
     BREAK_SQUAT_30: 25,
