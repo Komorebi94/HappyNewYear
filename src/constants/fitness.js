@@ -81,6 +81,45 @@ export const FINISHER_EXERCISES = [
     { id: 'stretch', label: '全身拉伸', icon: '🌿', type: 'hold', baseSec: 30, baseSets: 1, secCap: 60, minSession: 0 }
 ]
 
+/**
+ * 惊喜奖分档（线下凭截图兑现，不走存钱罐扣款）
+ * state[tier.id] === true 表示该档已登记兑现
+ */
+export const SURPRISE_REWARD_TIERS = [
+    {
+        id: 'surprise_60',
+        days: 60,
+        label: '两月坚持奖',
+        prizeHint: '入门惊喜礼物（由笑笑兑现）'
+    },
+    {
+        id: 'surprise_180',
+        days: 180,
+        label: '半年里程碑',
+        prizeHint: '进阶惊喜礼物（由笑笑兑现）'
+    },
+    {
+        id: 'surprise_365',
+        days: 365,
+        label: '全年自律奖',
+        prizeHint: '终极惊喜大礼（由笑笑兑现）'
+    }
+]
+
+export function getSurpriseRewardCopy (tier) {
+    return {
+        title: '🎉 惊喜奖解锁！',
+        subtitle: `${tier.label} · 连续打卡满 ${tier.days} 天`,
+        prizeHint: tier.prizeHint,
+        redeemSteps: [
+            `对本弹窗或首页惊喜奖区域截图（需能看到「${tier.days} 天」档位）`,
+            `把截图发给笑笑，说明兑现「${tier.label}」`,
+            '确认后线下领取对应礼物'
+        ],
+        screenshotTip: `本档为连续满 ${tier.days} 天的专属奖励，建议同时截到连续天数`
+    }
+}
+
 export const BREAKTHROUGH_LEVELS = [
     { id: 'break_5', reward: REWARDS.BREAK_5, label: '首次完成 5 个标准俯卧撑' },
     { id: 'break_10', reward: REWARDS.BREAK_10, label: '首次完成 10 个标准俯卧撑' },

@@ -33,6 +33,14 @@
         </nav>
 
         <FitnessToast :message="toast" />
+
+        <SurpriseRewardModal
+            :visible="showSurpriseModal"
+            :tier="activeSurpriseTier"
+            :continue-days="state.continueDays"
+            @redeem="redeemSurpriseReward"
+            @later="dismissSurpriseModal"
+        />
     </div>
 </template>
 
@@ -45,11 +53,21 @@ import HomeTab from './tabs/HomeTab.vue'
 import RecordsTab from './tabs/RecordsTab.vue'
 import SettingsTab from './tabs/SettingsTab.vue'
 import FitnessToast from './components/FitnessToast.vue'
+import SurpriseRewardModal from './components/SurpriseRewardModal.vue'
 
 const fitness = useFitnessDiscipline()
 provide(FITNESS_DISCIPLINE_KEY, fitness)
 
-const { toast, isSimMode, simDay, state } = fitness
+const {
+    toast,
+    isSimMode,
+    simDay,
+    state,
+    showSurpriseModal,
+    activeSurpriseTier,
+    redeemSurpriseReward,
+    dismissSurpriseModal
+} = fitness
 const activeTab = ref('home')
 
 const navItems = [

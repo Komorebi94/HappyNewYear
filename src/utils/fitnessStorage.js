@@ -1,4 +1,4 @@
-import { FITNESS_STORAGE_KEY, RECORD_STATUS } from '@/constants/fitness'
+import { FITNESS_STORAGE_KEY, RECORD_STATUS, SURPRISE_REWARD_TIERS } from '@/constants/fitness'
 
 export function formatDateKey (date = new Date()) {
     const y = date.getFullYear()
@@ -28,8 +28,29 @@ export function getDefaultState () {
         recordList: [],
         lastCheckDate: '',
         selectedTraining: 'wall',
-        lastPushVariant: 'wall'
+        lastPushVariant: 'wall',
+        ...Object.fromEntries(SURPRISE_REWARD_TIERS.map((t) => [t.id, false]))
     }
+}
+
+/** 合并旧版单档惊喜奖字段，并补齐各档兑现标记 */
+export function normalizeFitnessState (state) {
+    const next = { ...getDefaultState(), ...state }
+
+    if (next.surpriseRewardRedeemed) {
+        next.surprise_60 = true
+    }
+    delete next.surpriseRewardUnlocked
+    delete next.surpriseRewardRedeemed
+    delete next.surpriseRewardUnlockedAt
+
+    for (const tier of SURPRISE_REWARD_TIERS) {
+        if (typeof next[tier.id] !== 'boolean') {
+            next[tier.id] = false
+        }
+    }
+
+    return next
 }
 
 const LEGACY_STORAGE_KEY = 'fitness_discipline_v1'
@@ -46,7 +67,7 @@ export function loadFitnessState () {
         }
         if (!raw) return getDefaultState()
         const parsed = JSON.parse(raw)
-        return { ...getDefaultState(), ...parsed }
+        return normalizeFitnessState(parsed)
     } catch {
         return getDefaultState()
     }

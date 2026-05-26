@@ -9,6 +9,15 @@ import {
 } from '../src/utils/fitnessStorage.js'
 import { RECORD_STATUS } from '../src/constants/fitness.js'
 
+describe('getDefaultState', () => {
+    it('includes surprise reward tier flags', () => {
+        const state = getDefaultState()
+        expect(state.surprise_60).toBe(false)
+        expect(state.surprise_180).toBe(false)
+        expect(state.surprise_365).toBe(false)
+    })
+})
+
 describe('formatDateKey', () => {
     it('formats date as YYYY-MM-DD', () => {
         expect(formatDateKey(new Date(2026, 4, 22))).toBe('2026-05-22')

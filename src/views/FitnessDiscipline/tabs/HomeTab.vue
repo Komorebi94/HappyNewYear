@@ -223,6 +223,38 @@
             </button>
         </section>
 
+        <section
+            v-if="!isSimMode && showSurpriseSection"
+            class="surprise-banner"
+            :class="{ unlocked: canClaimSurprise }"
+        >
+            <p class="surprise-title">🎁 惊喜奖（凭截图兑现）</p>
+            <ul class="surprise-tier-list">
+                <li
+                    v-for="tier in SURPRISE_REWARD_TIERS"
+                    :key="tier.id"
+                    :class="surpriseTierStatus(tier).class"
+                >
+                    <span class="tier-days">{{ tier.days }} 天</span>
+                    <span class="tier-label">{{ tier.label }}</span>
+                    <span class="tier-status">{{ surpriseTierStatus(tier).text }}</span>
+                </li>
+            </ul>
+            <button
+                v-if="canClaimSurprise"
+                type="button"
+                class="surprise-btn"
+                @click="openSurpriseModal()"
+            >
+                查看待兑现档位（{{ pendingSurpriseTiers.length }}）
+            </button>
+            <p v-else-if="nextSurpriseTier" class="surprise-desc">
+                距下一档「{{ nextSurpriseTier.label }}」还差
+                <strong>{{ surpriseDaysRemaining }}</strong> 天
+            </p>
+            <p v-else class="surprise-desc">三档惊喜奖均已兑现 🎉</p>
+        </section>
+
         <section class="stats-grid">
             <div class="stat-item">
                 <span class="stat-value">{{ state.continueDays }}</span>
@@ -305,8 +337,9 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
-import { BREAKTHROUGH_LEVELS, REWARDS } from '@/constants/fitness'
+import { ref, inject, computed } from 'vue'
+import { BREAKTHROUGH_LEVELS, REWARDS, SURPRISE_REWARD_TIERS } from '@/constants/fitness'
+import { getDaysToSurpriseTier } from '@/utils/fitnessSurprise'
 import { FITNESS_DISCIPLINE_KEY } from '../keys'
 import ConfirmModal from '../components/ConfirmModal.vue'
 const {
@@ -328,8 +361,30 @@ const {
     skipCheckIn,
     halfCheckIn,
     claimBreakthrough,
-    setPushVariant
+    setPushVariant,
+    canClaimSurprise,
+    pendingSurpriseTiers,
+    nextSurpriseTier,
+    surpriseDaysRemaining,
+    openSurpriseModal
 } = inject(FITNESS_DISCIPLINE_KEY)
+
+const showSurpriseSection = computed(() =>
+    canClaimSurprise.value ||
+    nextSurpriseTier.value !== null ||
+    SURPRISE_REWARD_TIERS.some((t) => state.value[t.id])
+)
+
+const surpriseTierStatus = (tier) => {
+    if (state.value[tier.id]) {
+        return { class: 'redeemed', text: '已兑现' }
+    }
+    if (state.value.continueDays >= tier.days) {
+        return { class: 'pending', text: '待兑现' }
+    }
+    const left = getDaysToSurpriseTier(state.value.continueDays, tier)
+    return { class: 'locked', text: `还差 ${left} 天` }
+}
 
 const completeModal = ref(false)
 const halfModal = ref(false)
@@ -844,6 +899,102 @@ const onBreakthrough = (id) => {
 
 .action-icon {
     font-size: 1.125rem;
+}
+
+.surprise-banner {
+    padding: 0.875rem 1rem;
+    border-radius: 0.875rem;
+    background: linear-gradient(135deg, #fef3c7, #ffedd5);
+    border: 1px solid #fde68a;
+
+    &.unlocked {
+        background: linear-gradient(135deg, #fce7f3, #ffedd5);
+        border-color: #f9a8d4;
+    }
+}
+
+.surprise-title {
+    font-size: 0.875rem;
+    font-weight: 800;
+    color: #9a3412;
+}
+
+.surprise-tier-list {
+    list-style: none;
+    margin: 0.5rem 0 0.625rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    li {
+        display: grid;
+        grid-template-columns: 3rem 1fr auto;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.5rem 0.625rem;
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.65);
+        font-size: 0.75rem;
+
+        &.pending {
+            background: #fff;
+            border: 1px solid #f9a8d4;
+        }
+
+        &.redeemed {
+            opacity: 0.72;
+        }
+    }
+}
+
+.tier-days {
+    font-weight: 800;
+    color: #c2410c;
+}
+
+.tier-label {
+    color: #78350f;
+    font-weight: 600;
+}
+
+.tier-status {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #9a3412;
+    white-space: nowrap;
+
+    .pending & {
+        color: #be185d;
+    }
+
+    .redeemed & {
+        color: #64748b;
+    }
+}
+
+.surprise-desc {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: #78350f;
+
+    strong {
+        color: #c2410c;
+        font-weight: 800;
+    }
+}
+
+.surprise-btn {
+    margin-top: 0.625rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: linear-gradient(135deg, #fb923c, #ea580c);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .stats-grid {
